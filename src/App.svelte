@@ -1,24 +1,44 @@
 <script>
-	let data = [];
-	const API_KEY = "2c76eea1";
-	const query = "avengers";
-    
-    (async () => {
-		let response = await fetch(
-			`http://www.omdbapi.com/?s=${query}&apikey=${API_KEY}&plot=full`
-		);
-		response = await response.json();
-		data = [...response.Search].reduce((container, item) => {
-			const objMovie = {
-				id: item.imdbID,
-				url: item.Poster.replace("X300", ""),
-				title: item.Title,
-			};
+    import { onMount, onDestroy } from "svelte";
+    import { store } from "./store";
+    import Article from "./components/Article.svelte";
 
-			container.push(objMovie);
-			return container;
-		}, []);
-	})();
+    let data = [];
+    const API_KEY = "2c76eea1";
+    const query = "avengers";
+
+    const params = {
+        API_KEY,
+        query,
+    };
+
+    onMount(async () => {
+        let response = await fetch(
+            `http://www.omdbapi.com/?s=${query}&apikey=${API_KEY}&plot=full`
+        );
+        response = await response.json();
+        response = [...response.Search].reduce((container, item) => {
+            const objMovie = {
+                id: item.imdbID,
+                url: item.Poster.replace("X300", ""),
+                title: item.Title,
+            };
+
+            container.push(objMovie);
+            return container;
+        }, []);
+
+        data = response;
+
+        const first = data[0];
+
+        store.update((state) => ({
+            ...state,
+            id: first.id,
+            url: first.url,
+            title: first.title,
+        }));
+    });
 </script>
 
 <style>
@@ -30,16 +50,16 @@
         --dark-secondary: #ac1900;
         --success: #558b2f;
         --error: #c62828;
-        --white: #FFF;
+        --white: #fff;
         --color: #ffc107;
-        --font-family: 'Orbitron', sans-serif;
+        --font-family: "Orbitron", sans-serif;
     }
     main {
         padding: 0;
         margin: 0;
         height: 100%;
     }
-    
+
     .loader-container {
         height: 100%;
         display: flex;
@@ -47,7 +67,7 @@
         align-items: center;
         justify-content: center;
         background: var(--dark-primary);
-        filter: opacity(.9);
+        filter: opacity(0.9);
         color: var(--white);
     }
     .loader {
@@ -137,16 +157,12 @@
 </style>
 
 <main>
-	<div class="loader-container">
+    <div class="loader-container">
         <div class="loader">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+            {#each new Array(8) as myDiv}
+                <div />
+            {/each}
         </div>
+        <Article {...params} />
     </div>
 </main>

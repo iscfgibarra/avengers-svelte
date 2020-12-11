@@ -1,6 +1,15 @@
 <script>
     import { store } from "../store";
     import { fade } from "svelte/transition";
+
+    function closeSnackbar() {
+        store.update((state) => ({
+            ...state,
+            show: null,
+            type: null,
+            title: null,
+        }));
+    }
 </script>
 
 <style>
@@ -11,6 +20,28 @@
         right: 0;
         z-index: 10;
         font-family: var(--font-family);
+    }
+
+    .snackbar-container {
+        display: flex;
+        flex-direction: row;
+        padding: 15px;
+    }
+
+    span {
+        color: var(--white);
+        flex-grow: 3;
+        font-size: 12px;
+        user-select: none;
+    }
+
+    .close {
+        flex-grow: 1;
+        text-align: inherit;
+        cursor: pointer;
+        color: var(--white);
+        font-size: 1rem;
+        user-select: none;
     }
 
     .success {

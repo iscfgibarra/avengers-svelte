@@ -2,6 +2,7 @@
     import { onMount, onDestroy } from "svelte";
     import { store } from "./store";
     import Article from "./components/Article.svelte";
+    import SnackBar from "./components/SnackBar.svelte";
 
     let data = [];
     const API_KEY = "2c76eea1";
@@ -13,31 +14,40 @@
     };
 
     onMount(async () => {
-        let response = await fetch(
-            `http://www.omdbapi.com/?s=${query}&apikey=${API_KEY}&plot=full`
-        );
-        response = await response.json();
-        response = [...response.Search].reduce((container, item) => {
-            const objMovie = {
-                id: item.imdbID,
-                url: item.Poster.replace("X300", ""),
-                title: item.Title,
-            };
+        try {
+            let response = await fetch(
+                `http://www.omdbapi.com/?s=${query}&apikey=${API_KEY}&plot=full`
+            );
+            response = await response.json();
+            response = [...response.Search].reduce((container, item) => {
+                const objMovie = {
+                    id: item.imdbID,
+                    url: item.Poster.replace("X300", ""),
+                    title: item.Title,
+                };
 
-            container.push(objMovie);
-            return container;
-        }, []);
+                container.push(objMovie);
+                return container;
+            }, []);
 
-        data = response;
+            data = response;
+            data = [];
+            const first = data[0];
 
-        const first = data[0];
-
-        store.update((state) => ({
-            ...state,
-            id: first.id,
-            url: first.url,
-            title: first.title,
-        }));
+            store.update((state) => ({
+                ...state,
+                id: first.id,
+                url: first.url,
+                title: first.title,
+            }));
+        } catch (error) {
+            store.update((state) => ({
+                ...state,
+                show: true,
+                type: "error",
+                title: error.message,
+            }));
+        }
     });
 </script>
 
@@ -157,6 +167,7 @@
 </style>
 
 <main>
+    <SnackBar />
     <div class="loader-container">
         <div class="loader">
             {#each new Array(8) as myDiv}

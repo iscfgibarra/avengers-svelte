@@ -34,10 +34,9 @@
         font-size: 12px;
         user-select: none;
     }
-
     .close {
         flex-grow: 1;
-        text-align: inherit;
+        text-align: right;
         cursor: pointer;
         color: var(--white);
         font-size: 1rem;

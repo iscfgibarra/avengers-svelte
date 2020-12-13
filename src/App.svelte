@@ -29,8 +29,10 @@
 
     onMount(async () => {
         try {
+            const protocolo =
+                window.location.protocol != "https:" ? "http" : "https";
             let response = await fetch(
-                `http://www.omdbapi.com/?s=${query}&apikey=${API_KEY}&plot=full`
+                `${protocolo}://www.omdbapi.com/?s=${query}&apikey=${API_KEY}&plot=full`
             );
             response = await response.json();
             response = [...response.Search].reduce((container, item) => {

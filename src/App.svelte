@@ -3,10 +3,24 @@
     import { store } from "./store";
     import Article from "./components/Article.svelte";
     import SnackBar from "./components/SnackBar.svelte";
+    import Page from "./components/Page.svelte";
+    import Thumbnail from "./components/Thumbnail.svelte";
+    import Youtube from "./components/Youtube.svelte";
 
     let data = [];
     const API_KEY = "2c76eea1";
     const query = "avengers";
+    const videos = [
+        "9hpWz0ZMFAo",
+        "3xk11d9hjp0",
+        "n1qhwqKZ1eY",
+        "kpVsn9oQip0",
+        "SLD9xzJ4oeU",
+        "yNXfOOL8824",
+        "An_NsOddM3o",
+        "ZQpWRenGF_w",
+        "823iAZOEKt8",
+    ];
 
     const params = {
         API_KEY,
@@ -30,8 +44,13 @@
                 return container;
             }, []);
 
+            response = response.map((item, index) => {
+                const movie = item;
+                movie.trailer = videos[index];
+                return movie;
+            });
+
             data = response;
-            data = [];
             const first = data[0];
 
             store.update((state) => ({
@@ -39,6 +58,7 @@
                 id: first.id,
                 url: first.url,
                 title: first.title,
+                trailer: first.trailer,
             }));
         } catch (error) {
             store.update((state) => ({
@@ -168,12 +188,21 @@
 
 <main>
     <SnackBar />
-    <div class="loader-container">
-        <div class="loader">
-            {#each new Array(8) as myDiv}
-                <div />
-            {/each}
+    <Youtube />
+    {#if data.length > 0}
+        <div>
+            <Page />
         </div>
-        <Article {...params} />
-    </div>
+    {:else}
+        <div class="loader-container">
+            <div class="loader">
+                {#each new Array(8) as myDiv}
+                    <div />
+                {/each}
+            </div>
+            <Article {...params} />
+        </div>
+    {/if}
+
+    <Thumbnail {data} />
 </main>
